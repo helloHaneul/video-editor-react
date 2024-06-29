@@ -1,5 +1,5 @@
 import { Upload, message } from "antd";
-import { UploadFileOutlined } from "@mui/icons-material";
+import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 
 const VideoLoader = ({ disabled, onChange = () => {}, onRemove = () => {} }) => {
@@ -36,7 +36,7 @@ const VideoLoader = ({ disabled, onChange = () => {}, onRemove = () => {} }) => 
             {
                 <Dragger {...props} style={{ color: "#f3f3f3" }}>
                     <p>
-                        <UploadFileOutlined />
+                        <UploadOutlined />
                     </p>
                     <p style={{ fontWeight: "bold", fontSize: "22px" }}>
                         비디오 업로드하기

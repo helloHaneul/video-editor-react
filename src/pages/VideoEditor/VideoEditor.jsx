@@ -108,7 +108,6 @@ const VideoEditor = () => {
                             />
                             <Button
                                 className={styles.re__upload__btn}
-                                style={{ width: 'fit-content' }}
                                 onClick={() => uploadFile.current.click()}
                             >
                                 비디오 재선택
@@ -164,7 +163,12 @@ const VideoEditor = () => {
                             />
 
                         </section>
-                        <section style={{ display: 'flex', gap: 16 }}>
+                        <section 
+                            style={{ 
+                                width: '100%',
+                                justifyContent: 'center'
+                            }}
+                        >
                             <VideoConversionButton 
                                 onConversionStart={() => {
                                     setProcessing(true);

@@ -1,8 +1,21 @@
-import { Button } from 'antd';
+import { useState } from 'react';
 import { fetchFile } from '@ffmpeg/ffmpeg';
 import { readFileAsBase64, sliderValueToVideoTime } from '../../utils/utils';
-import out from '../../assets/icons/out.svg';
-import dark_download from '../../assets/icons/dark_download.svg';
+
+import { Button, Switch, Radio } from 'antd';
+import styles from './VideoConversionButtons.module.css'
+import { 
+    BsVolumeMute,
+    BsVolumeUp,
+    BsSymmetryHorizontal,
+    BsSymmetryVertical,
+    BsArrowCounterclockwise,
+} from 'react-icons/bs'
+import {
+    MdGifBox,
+    MdDownload,
+    MdOutlineVoicemail
+} from 'react-icons/md'
 
 function VideoConversionButton({
     videoPlayerState,
@@ -15,6 +28,15 @@ function VideoConversionButton({
     onVideoMute = () => {},
     onVideoChanged = (newVideo) => {},
 }) {
+    const [flipVal, setFlipValue] = useState('NONE');
+    const onFlipRadioChange = (e) => {
+        console.log(e.target.value);
+        setFlipValue(e.target.value);
+    }
+
+    // [질문] 상위 컴포넌트에서 동일한 상태값을 관리하는데 여기에다 해도 괜찮나?
+    const [isVolumeUp, setMute] = useState(true);
+
     const convertToGif = async () => {
         // starting the conversion process
         onConversionStart(true);
@@ -49,6 +71,7 @@ function VideoConversionButton({
     };
 
     const onCutTheVideo = async () => {
+
         onConversionStart(true);
 
         const [min, max] = sliderValues;
@@ -57,15 +80,37 @@ function VideoConversionButton({
 
         ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
 
-        await ffmpeg.run('-ss', `${minTime}`, '-i', 'input.mp4', '-t', `${maxTime}`, '-c', 'copy', 'output.mp4');
-        
-        // mute : '-an'
-        //await ffmpeg.run('-ss', `${minTime}`, '-i', 'input.mp4', '-t', `${maxTime}`, '-c', 'copy', '-an', 'output.mp4');
-        // vflip
-        //await ffmpeg.run('-i', 'input.mp4', '-vf', 'vflip', '-c:a', 'copy', 'output.mp4');
-        // hfip with mute
-        //await ffmpeg.run('-i', 'input.mp4', '-vf', 'hflip', '-c:a', 'copy', '-an', 'output.mp4');
-                
+        const args = [
+            "-ss",
+            `${minTime}`,
+            "-i",
+            "input.mp4",
+            "-t", 
+            `${maxTime}`,
+        ];
+
+        switch(flipVal) {
+            case 'HFLIP':
+                args.push("-vf");
+                args.push("vflip");
+                args.push("-c:a", "copy");
+                break;
+            case 'VFLIP':
+                args.push("-vf");
+                args.push("hflip");
+                args.push("-c:a", "copy");
+                break;
+            default:
+                args.push("-c", "copy");
+        }
+
+        console.log(`isVolumeUp - ${isVolumeUp}`);
+        if(!isVolumeUp) {
+            args.push("-an");
+        } 
+
+        await ffmpeg.run(...args, "output.mp4");
+
         const data = ffmpeg.FS('readFile', 'output.mp4');
         const dataURL = await readFileAsBase64(new Blob([data.buffer], { type: 'video/mp4' }));
 
@@ -77,40 +122,73 @@ function VideoConversionButton({
         onConversionEnd(false);
     };
 
-    // [TODO] preview update to fliped video
-    const onFlipView = async () => {
-        
-        ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
-
-        await ffmpeg.run('-i', 'input.mp4', '-vf', 'vflip', '-c:a', 'copy', 'output.mp4');
-                
-        // const data = ffmpeg.FS('readFile', 'output.mp4');
-        // const dataURL = await readFileAsBase64(new Blob([data.buffer], { type: 'video/mp4' }));
-
-        // onVideoChanged(dataURL);
-    }
-
     return (
         <>
-            <div style={{ marginBottom: 16 }}>
-                <Button style={{ margin: 8 }} onClick={() => onVideoMute()}>
-                    Mute
-                </Button>
-                <Button onClick={() => onFlipView()}>
-                    Flip
-                </Button>
-            </div>
+            <div>
+                <div style={{ width: '100%', marginBottom: 32, justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', marginBottom: 16 }}>
+                        <p style={{ marginRight: 30 }}>소리 켜기/끄기</p>
+                        <Switch 
+                            checkedChildren={<BsVolumeUp />}
+                            unCheckedChildren={<BsVolumeMute />}
+                            checked={isVolumeUp}
+                            onChange={() => {
+                                setMute(!isVolumeUp);
+                                onVideoMute();
+                            }}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', marginBottom: 16 }}>
+                        <p style={{ marginRight: 45 }}>화면 돌리기</p>
+                        <Radio.Group onChange={onFlipRadioChange} value={flipVal}>
+                            <Radio value={'NONE'}>
+                                <p>No Effect</p>
+                            </Radio>
+                            <Radio value={'HFLIP'}>
+                            {
+                                (flipVal === 'HFLIP') ? (
+                                    <BsSymmetryHorizontal style={{ color: 'red', fontWeight: 'bold' }} />
+                                ) : (
+                                    <BsSymmetryHorizontal />
+                                )
+                            }
+                            </Radio>
+                            <Radio value={'VFLIP'}>
+                            {
+                                (flipVal === 'VFLIP') ? (
+                                    <BsSymmetryVertical style={{ color: 'red', fontWeight: 'bold' }} />
+                                ) : (
+                                    <BsSymmetryVertical />
+                                )
+                            }
+                            </Radio>
+                        </Radio.Group>
+                    </div>
+                    
+                    <Button onClick={() => {
+                        setFlipValue('NONE');
+                        setMute(true);
+                    }}>
+                        옵션 초기화<BsArrowCounterclockwise />
+                    </Button>
+                </div>
+                <div style={{ display: 'flex', width: '100%', gap: 32 }}>
+                    <Button onClick={() => onCutTheVideo()} className={styles.out__btn}>
+                        <MdDownload />
+                        <p>비디오 저장하기</p>
+                    </Button>
 
-            <Button onClick={() => onCutTheVideo()} className="gif__out__btn" style={{ marginBottom: 16 }}>
-                <img src={dark_download} alt="비디오 저장하기" />
-                <p style={{ color: '#383838', fontSize: 16, fontWeight: 700 }}>비디오 저장하기</p>
-            </Button>
+                    <Button className={styles.out__btn}>
+                        <MdOutlineVoicemail />
+                        <p>음성만 내보내기</p>
+                    </Button>
 
-            <Button onClick={() => convertToGif()} className="gif__out__btn">
-                <img src={out} alt="GIF 내보내기" />
-                <p style={{ color: '#383838', fontSize: 16, fontWeight: 700 }}>GIF 내보내기</p>
-            </Button>
-
+                    <Button onClick={() => convertToGif()} className={styles.out__btn}>
+                        <MdGifBox />
+                        <p>GIF 내보내기</p>
+                    </Button>
+                </div>
+            </div>            
         </>
     );
 }

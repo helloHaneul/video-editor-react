@@ -1,55 +1,58 @@
-import { Upload, message } from "antd";
-import { MdUploadFile } from "react-icons/md"
-import { useEffect, useState } from "react";
+import { Upload, message } from 'antd'
+import { MdUploadFile } from 'react-icons/md'
+import { useEffect, useState } from 'react'
 
-const VideoLoader = ({ disabled, onChange = () => {}, onRemove = () => {} }) => {
+const VideoLoader = ({
+  disabled,
+  onChange = () => {},
+  onRemove = () => {},
+}) => {
+  const [file, setFile] = useState()
 
-    const [file, setFile] = useState();
+  useEffect(() => {
+    onChange(file)
+  }, [file])
 
-    useEffect(() => {
-        onChange(file);
-    }, [file]);
+  const { Dragger } = Upload
 
-    const { Dragger } = Upload;
+  const props = {
+    name: 'file',
+    multiple: false,
+    accept: 'video/*',
+    disabled: disabled,
+    beforeUpload() {
+      return false
+    },
+    onChange(info) {
+      if (info.fileList && info.fileList.length > 0) {
+        setFile(info.fileList[0].originFileObj)
+        message.success(`${info.file.name} file uploaded successfully.`)
+      }
+    },
+    onDrop(e) {
+      console.log('Dropped files', e.dataTransfer.files)
+    },
+  }
 
-    const props = {
-        name: 'file',
-        multiple: false,
-        accept:"video/*",
-        disabled: disabled,
-        beforeUpload() {
-            return false;
-        },
-        onChange(info) {
-            if (info.fileList && info.fileList.length > 0) {
-                setFile(info.fileList[0].originFileObj);
-                message.success(`${info.file.name} file uploaded successfully.`);
-            }
-        },
-        onDrop(e) {
-            console.log('Dropped files', e.dataTransfer.files);
-        },
-    };
-
-    return (
-        <>
-            {
-                <Dragger {...props} style={{ color: "#383838" }}>
-                    <p style={{ fontWeight: "bold", fontSize: "36px" }}>
-                        <MdUploadFile />
-                    </p>
-                    <p style={{ fontWeight: "bold", fontSize: "22px" }}>
-                        비디오 업로드하기
-                    </p>
-                    <p>
-                        최대 5MB 영상파일(.avi, .mp4)<br />
-                        파일을 선택하거나 여기에 끌어다 놓아주세요.
-                    </p>
-                </Dragger>
-            }
-            
-        </>
-    );
+  return (
+    <>
+      {
+        <Dragger {...props} style={{ color: '#383838' }}>
+          <p style={{ fontWeight: 'bold', fontSize: '36px' }}>
+            <MdUploadFile />
+          </p>
+          <p style={{ fontWeight: 'bold', fontSize: '22px' }}>
+            비디오 업로드하기
+          </p>
+          <p>
+            최대 5MB 영상파일(.avi, .mp4)
+            <br />
+            파일을 선택하거나 여기에 끌어다 놓아주세요.
+          </p>
+        </Dragger>
+      }
+    </>
+  )
 }
 
-export default VideoLoader;
+export default VideoLoader

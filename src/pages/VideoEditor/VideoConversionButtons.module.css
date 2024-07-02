@@ -1,23 +1,23 @@
 .out__btn {
-    width: 100%;
-    padding: 16px 8px;
-    border-radius: 8px;
-    height: fit-content;
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    align-items: center;
-    background-color: #fff;
+  width: 100%;
+  padding: 16px 8px;
+  border-radius: 8px;
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  align-items: center;
+  background-color: #fff;
 }
 
 .out__btn p {
-    font-size: 16;
-    font-weight: 700;
+  font-size: 16;
+  font-weight: 700;
 }
-  
+
 .out__btn:hover,
 .out__btn:focus,
 .out__btn:active {
-    background: #fff !important;
-    border: none !important;
+  background: #fff !important;
+  border: none !important;
 }

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { useState, useLayoutEffect } from 'react'
+import React, { useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 
 const mobileRegex = [
   /Android/i,
@@ -8,59 +8,59 @@ const mobileRegex = [
   /iPod/i,
   /BlackBerry/i,
   /Windows Phone/i,
-]
+];
 
 const useUserEnv = () => {
   const [env, setEnv] = useState({
     device: '',
     window: '',
-  })
+  });
 
   useEffect(() => {
-    const userAgent = window.navigator?.userAgent || ''
+    const userAgent = window.navigator?.userAgent || '';
     setEnv({
       ...env,
       device: mobileRegex.some((mobile) => userAgent.match(mobile))
         ? 'mobile'
         : 'non-mobile',
-    })
-  }, [])
+    });
+  }, []);
 
-  let screenWidth = window.innerWidth
+  let screenWidth = window.innerWidth;
 
   const updateWindowType = () => {
-    screenWidth = window.innerWidth
+    screenWidth = window.innerWidth;
 
-    let type = ''
+    let type = '';
     if (screenWidth <= 768) {
-      type = 'mobile'
+      type = 'mobile';
     }
 
     if (screenWidth > 768 && screenWidth <= 1024) {
-      type = 'tablet'
+      type = 'tablet';
     }
 
     if (screenWidth > 1024) {
-      type = 'pc'
+      type = 'pc';
     }
 
     setEnv({
       ...env,
       window: type,
-    })
-  }
+    });
+  };
 
   useLayoutEffect(() => {
-    updateWindowType()
+    updateWindowType();
 
-    window.addEventListener('resize', updateWindowType)
+    window.addEventListener('resize', updateWindowType);
 
     return () => {
-      window.removeEventListener('resize', updateWindowType)
-    }
-  }, [])
+      window.removeEventListener('resize', updateWindowType);
+    };
+  }, []);
 
-  return env
-}
+  return env;
+};
 
-export default useUserEnv
+export default useUserEnv;

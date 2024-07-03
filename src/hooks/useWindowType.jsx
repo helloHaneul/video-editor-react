@@ -1,36 +1,36 @@
-import { useState, useLayoutEffect } from 'react'
+import { useState, useLayoutEffect } from 'react';
 
 const useWindowType = () => {
-  const [windowType, setWindowType] = useState('pc')
+  const [windowType, setWindowType] = useState('pc');
 
-  let screenWidth = window.innerWidth
+  let screenWidth = window.innerWidth;
 
   const updateWindowType = () => {
-    screenWidth = window.innerWidth
+    screenWidth = window.innerWidth;
 
     if (screenWidth <= 768) {
-      setWindowType('mobile')
+      setWindowType('mobile');
     }
 
     if (screenWidth > 768 && screenWidth <= 1024) {
-      setWindowType('tablet')
+      setWindowType('tablet');
     }
 
     if (screenWidth > 1024) {
-      setWindowType('pc')
+      setWindowType('pc');
     }
-  }
+  };
 
   useLayoutEffect(() => {
-    updateWindowType()
-    window.addEventListener('resize', updateWindowType)
+    updateWindowType();
+    window.addEventListener('resize', updateWindowType);
 
     return () => {
-      window.removeEventListener('resize', updateWindowType)
-    }
-  }, [windowType])
+      window.removeEventListener('resize', updateWindowType);
+    };
+  }, [windowType]);
 
-  return windowType
-}
+  return windowType;
+};
 
-export default useWindowType
+export default useWindowType;

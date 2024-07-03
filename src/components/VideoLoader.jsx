@@ -1,43 +1,36 @@
-import { Upload, message } from 'antd'
-import { MdUploadFile } from 'react-icons/md'
-import { useEffect, useState } from 'react'
+import { Upload, message } from 'antd';
+import { MdUploadFile } from 'react-icons/md';
 
-const VideoLoader = ({
-  disabled,
-  onChange = () => {},
-  onRemove = () => {},
-}) => {
-  const [file, setFile] = useState()
+const VideoLoader = ({ disabled, onChange = () => {} }) => {
+  const handleVideoFile = (file) => {
+    onChange(file);
+  };
 
-  useEffect(() => {
-    onChange(file)
-  }, [file])
+  const { Dragger } = Upload;
 
-  const { Dragger } = Upload
-
-  const props = {
+  const draggerProps = {
     name: 'file',
     multiple: false,
     accept: 'video/*',
     disabled: disabled,
     beforeUpload() {
-      return false
+      return false;
     },
     onChange(info) {
       if (info.fileList && info.fileList.length > 0) {
-        setFile(info.fileList[0].originFileObj)
-        message.success(`${info.file.name} file uploaded successfully.`)
+        handleVideoFile(info.fileList[0].originFileObj);
+        message.success(`${info.file.name} file uploaded successfully.`);
       }
     },
     onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files)
+      //console.log('Dropped files', e.dataTransfer.files);
     },
-  }
+  };
 
   return (
     <>
       {
-        <Dragger {...props} style={{ color: '#383838' }}>
+        <Dragger {...draggerProps} style={{ color: '#383838' }}>
           <p style={{ fontWeight: 'bold', fontSize: '36px' }}>
             <MdUploadFile />
           </p>
@@ -52,7 +45,7 @@ const VideoLoader = ({
         </Dragger>
       }
     </>
-  )
-}
+  );
+};
 
-export default VideoLoader
+export default VideoLoader;

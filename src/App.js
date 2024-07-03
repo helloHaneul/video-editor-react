@@ -1,9 +1,9 @@
 // 김하늘
-import './App.css'
+import './App.css';
 
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import VideoEditor from './pages/VideoEditor/VideoEditor'
+import VideoEditor from './pages/VideoEditor';
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Route path="/" element={<VideoEditor />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
